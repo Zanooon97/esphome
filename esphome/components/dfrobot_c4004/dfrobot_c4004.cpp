@@ -408,6 +408,10 @@ bool C4004Component::set_multi_tag_config_hex(const std::string &value, std::str
     return false;
   }
 
+  if (count == 0) {
+    return this->clear_all_tags();
+  }
+
   for (uint16_t i = 0; i < count; i++) {
     const uint16_t offset = 2 + i * C4004_TAG_CONFIG_RECORD_LEN;
     const uint8_t io_index = payload[offset + 3];
