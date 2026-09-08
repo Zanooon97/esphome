@@ -658,7 +658,7 @@ MoveTgt C4002Component::get_move_target_info() {
 bool C4002Component::begin() {
   bool ret;
 
-  ret = set_report_period(255);
+  ret = set_report_period(10);
   if (!ret) {
     return false;
   }
