@@ -13,6 +13,8 @@ static const char *const TAG = "dfrobot_c4002: ";
  * We call update_config_param() to load device configuration and publish initial values.
  */
 void C4002Component::setup() {
+  ESP_LOGI(TAG, "Waiting for C4002 to become ready...");
+  delay(2000);
   update_config_param();
 }
 
