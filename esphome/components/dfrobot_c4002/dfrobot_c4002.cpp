@@ -13,9 +13,8 @@ static const char *const TAG = "dfrobot_c4002: ";
  * We call update_config_param() to load device configuration and publish initial values.
  */
 void C4002Component::setup() {
-  ESP_LOGI(TAG, "Waiting for C4002 to become ready...");
-  delay(2000);
   update_config_param();
+  this->publish_text("The initialization of c4002 was successful!");
 }
 
 /**
@@ -47,7 +46,7 @@ void C4002Component::loop() {
     }
   }
 
-  if (now - last_time >= 1000) {  // Execute every 1000ms
+  if (now - last_time >= 100) {  // Execute every 1000ms
     last_time = now;
     get_data();
   }
@@ -92,31 +91,12 @@ void C4002Component::update_config_param() {
   ESP_LOGD(TAG, "update config param test!");
 
   //** driver init **/
-  const int max_attempts = 5;
-  bool initialized = false;
-  
-  for (int attempt = 1; attempt <= max_attempts; ++attempt) {
-    if (begin()) {
-      initialized = true;
-      break;
-    }
-  
-    ESP_LOGW(TAG, "C4002 begin failed (%d/%d)", attempt, max_attempts);
-    delay(300);
+  while (!begin()) {
+    delayMicroseconds(1000 * 300);
+
+    ESP_LOGD(TAG, "C4002 begin failed");
   }
-  
-  if (!initialized) {
-    ESP_LOGE(
-        TAG,
-        "C4002 initialization failed after %d attempts. Check power, UART pins and TX/RX wiring.",
-        max_attempts
-    );
-    this->publish_text("C4002 initialization failed - check UART/wiring");
-    return;
-  }
-  
-  ESP_LOGI(TAG, "C4002 begin success");
-  this->publish_text("The initialization of c4002 was successful!");
+  ESP_LOGD(TAG, "C4002 begin success");
 
   setup_number();
 
@@ -658,7 +638,7 @@ MoveTgt C4002Component::get_move_target_info() {
 bool C4002Component::begin() {
   bool ret;
 
-  ret = set_report_period(10);
+  ret = set_report_period(255);
   if (!ret) {
     return false;
   }
